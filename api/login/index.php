@@ -8,7 +8,7 @@ require (__DIR__.'../../src/config/db.php');
 
 $app = AppFactory::create();
 // aqui es importante agreagar el directorio donde esta el index por que si no no jala 
-$app->setBasePath('/apibackend/api/login');
+$app->setBasePath('/slimsso/api/login');
 $app->addRoutingMiddleware();
 /**
  * Add Error Middleware
