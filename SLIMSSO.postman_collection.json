@@ -1,0 +1,84 @@
+{
+	"info": {
+		"_postman_id": "0310cd6e-3405-44b2-be53-8af9e2a01abe",
+		"name": "SLIMSSO",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2809774",
+		"_collection_link": "https://affinity-layer.postman.co/workspace/LightIt~6dad3d8c-389b-4c78-bb63-d983fabc9239/collection/2809774-0310cd6e-3405-44b2-be53-8af9e2a01abe?action=share&source=collection_link&creator=2809774"
+	},
+	"item": [
+		{
+			"name": "http://localhost/apibackend/api/login/login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user\" : \"jalcivar\",\r\n    \"secret\":\"aw3se4dr5\",\r\n    \"system\":\"BRJ\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/slimsso/api/login/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"slimsso",
+						"api",
+						"login",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/apibackend/api/login/codigos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/slimsso/api/login/codigos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"slimsso",
+						"api",
+						"login",
+						"codigos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "encsecret",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/slimsso/api/login/enc/aw3se4dr5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"slimsso",
+						"api",
+						"login",
+						"enc",
+						"aw3se4dr5"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
