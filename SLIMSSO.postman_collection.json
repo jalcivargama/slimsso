@@ -8,7 +8,7 @@
 	},
 	"item": [
 		{
-			"name": "http://localhost/apibackend/api/login/login",
+			"name": "http://localhost/apibackend/api/login/adduser",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -75,6 +75,46 @@
 						"login",
 						"enc",
 						"aw3se4dr5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/slimsso/api/login/adduser",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MjU3NjQzMjIsImlzcyI6InlvdXIuZG9tYWluLm5hbWUiLCJuYmYiOjE3MjU3NjQzMjIsImV4cCI6MTcyNTc2NjEyMiwidXNlciI6ImphbGNpdmFyIiwidXNybmFtZSI6Ikp1YW4gTWFudWVsIiwibGFzdG5hbWUiOiJBbGNpdmFyIiwic2Vjb25kbGFzdG5hbWUiOiJHYW1hIiwiZW1haWwiOiJqYWxjaXZhckBncnVwby1kaXRlYy5jb20ubXgiLCJzeXNuYW1lIjoiQlJKIiwic3RhdHVzIjoiQSJ9.h1961GLUdnCX33APG2u5uPqEnb7Mjzsp7LyjxlDyllma23BKtpiA1tK0dV2UMTWoqJGZNopnPFDLMc7veJb25Q",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user\":\"JUANMA4\",\r\n    \"password\":\"789101112\",\r\n    \"name\":\"JUAN MANUEL\",\r\n    \"lastname\":\"ALCIVAR\",\r\n    \"secondlastname\":\"GAMA\",\r\n    \"email\":\"masterwoong@gmail.com\",\r\n    \"status\":\"A\" \r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/slimsso/api/login/adduser",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"slimsso",
+						"api",
+						"login",
+						"adduser"
 					]
 				}
 			},
