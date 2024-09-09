@@ -33,6 +33,7 @@ $app->add(function ($request, $handler) {
 
 // Init define app routes
 // este metodo inicial tambien deberiamos escribirlo segun el dominio $response->getBody()->write("API LOGIN");
+
 $app->get('/', function (Request $request, Response $response, $args) {
     $response->getBody()->write("API LOGIN");
     return $response;
@@ -74,7 +75,7 @@ if($user){
 
     $secret_Key  = '68V0zWFrS72GbpPreidkQFLfj4v9m3Ti+DXc8OB0gcM=';
     $date   = new DateTimeImmutable();
-    $expire_at     = $date->modify('+30 minutes')->getTimestamp();  
+    $expire_at     = $date->modify('+4 hours')->getTimestamp();  
     $domainName = "your.domain.name";
     
     $usr = $user['user'];
@@ -141,24 +142,16 @@ if($user){
 //metodos CRUD
 
 $app->put('/adduser', function (Request $request, Response $response, $args) use ($pdo) {
-    $headers = getallheaders();
-    if(!array_key_exists('Authorization', $headers)){  
-        $response->getBody()->write( json_encode(['Codigo' => 666, 'msg' => "REQUIERE TOKEN DE AUTORIZACION"  ])); 
-        return $response->withHeader('Content-Type','application/json');
-        exit;
-    }else{
-        $headerAut = $headers['Authorization'];
-    }
-    $body = $request->getBody();
-    $data = json_decode($body, true);
     try {
-        $secret_Key  = '68V0zWFrS72GbpPreidkQFLfj4v9m3Ti+DXc8OB0gcM=';
-        list($type, $jwt) = explode(' ', $headerAut, 2);
-            if (strcasecmp($type, 'Bearer') == 0) {
-            $decoded = JWT::decode($jwt, new Key($secret_Key, 'HS512'));
-            $decoded_array = (array) $decoded;
-
-            }
+        $body = $request->getBody();
+        $data = json_decode($body, true);
+        $headers = getallheaders();
+        $decoded_array =  validaToken($headers);
+        if(empty($decoded_array)){
+            $response->getBody()->write( json_encode(['error' => 'Unauthorized'])); 
+            return $response->withStatus(401)->withHeader('Content-Type','application/json');
+            exit;
+        }
 //aqui inicia la generacion automatica de codigo
 
     $user = array_key_exists('user', $data) ? $data['user'] : '';
@@ -219,28 +212,21 @@ $app->put('/adduser', function (Request $request, Response $response, $args) use
 
 
 $app->patch('/updateuser/{id}', function (Request $request, Response $response, $args) use ($pdo) {
-    $headers = getallheaders();
-    if(!array_key_exists('Authorization', $headers)){  
-        $response->getBody()->write( json_encode(['Codigo' => 666, 'msg' => "REQUIERE TOKEN DE AUTORIZACION"  ])); 
-        return $response->withHeader('Content-Type','application/json');
-        exit;
-    }else{
-        $headerAut = $headers['Authorization'];
-    }
-    $body = $request->getBody();
-    $data = json_decode($body, true);
-    //aqui va el PK de la tabla
-    $id = array_key_exists('id', $args) ? $args['id'] : '';
-    //aqui va el PK de la tabla
+ 
     try {
-        $secret_Key  = '68V0zWFrS72GbpPreidkQFLfj4v9m3Ti+DXc8OB0gcM=';
-        list($type, $jwt) = explode(' ', $headerAut, 2);
-            if (strcasecmp($type, 'Bearer') == 0) {
-            $decoded = JWT::decode($jwt, new Key($secret_Key, 'HS512'));
-            $decoded_array = (array) $decoded;
-
-            }
-//aqui inicia la generacion automatica de codigo
+        $body = $request->getBody();
+        $data = json_decode($body, true);
+        $headers = getallheaders();
+        $decoded_array =  validaToken($headers);
+        if(empty($decoded_array)){
+            $response->getBody()->write( json_encode(['error' => 'Unauthorized'])); 
+            return $response->withStatus(401)->withHeader('Content-Type','application/json');
+            exit;
+        }
+   //aqui inicia la generacion automatica de codigo
+   //aqui va el PK de la tabla
+   $id = array_key_exists('id', $args) ? $args['id'] : '';
+   //aqui va el PK de la tabla
     
     $user = array_key_exists('user', $data) ? $data['user'] : '';
     $password = array_key_exists('password', $data) ? $data['password'] : '';
@@ -300,9 +286,9 @@ $app->patch('/updateuser/{id}', function (Request $request, Response $response, 
             $response->getBody()->write( json_encode($responseDto)  );
     } catch (Exception $e) {
         $response->getBody()->write( json_encode(['Codigo' => 2, 'msg' => $e->getMessage() , 'body' => '']) );
-    } finally {
-        return $response;      
-    }
+    }  finally {
+        $pdo = null;   
+    } 
   return $response->withHeader('Content-Type','application/json');
 });
 
@@ -310,29 +296,19 @@ $app->patch('/updateuser/{id}', function (Request $request, Response $response, 
 
 
 $app->delete('/deleteuser/{id}', function (Request $request, Response $response, $args) use ($pdo) {
-    $headers = getallheaders();
-    if(!array_key_exists('Authorization', $headers)){  
-        $response->getBody()->write( json_encode(['Codigo' => 666, 'msg' => "REQUIERE TOKEN DE AUTORIZACION"  ])); 
-        return $response->withHeader('Content-Type','application/json');
-        exit;
-    }else{
-        $headerAut = $headers['Authorization'];
-    }
-    $body = $request->getBody();
-    $data = json_decode($body, true);
-    //aqui va el PK de la tabla
-    $id = array_key_exists('id', $args) ? $args['id'] : '';
-    //aqui va el PK de la tabla
+   
     try {
-        $secret_Key  = '68V0zWFrS72GbpPreidkQFLfj4v9m3Ti+DXc8OB0gcM=';
-        list($type, $jwt) = explode(' ', $headerAut, 2);
-            if (strcasecmp($type, 'Bearer') == 0) {
-            $decoded = JWT::decode($jwt, new Key($secret_Key, 'HS512'));
-            $decoded_array = (array) $decoded;
-
-            }
-//aqui inicia la generacion automatica de codigo
-    
+        $headers = getallheaders();
+        $decoded_array =  validaToken($headers);
+        if(empty($decoded_array)){
+            $response->getBody()->write( json_encode(['error' => 'Unauthorized'])); 
+            return $response->withStatus(401)->withHeader('Content-Type','application/json');
+            exit;
+        }
+        //aqui inicia la generacion automatica de codigo
+        //aqui va el PK de la tabla
+        $id = array_key_exists('id', $args) ? $args['id'] : '';
+        //aqui va el PK de la tabla
     if($id==""){
         $responseDto = ['Codigo' => 3, 'msg' => 'TODOS LOS DATOS SON OBLIGATORIOS', 'body' => $body ];
         $response->getBody()->write( json_encode($responseDto)  );
@@ -352,31 +328,22 @@ $app->delete('/deleteuser/{id}', function (Request $request, Response $response,
     } catch (Exception $e) {
         $response->getBody()->write( json_encode(['Codigo' => 2, 'msg' => $e->getMessage() , 'body' => '']) );
     } finally {
-        return $response;      
-    }
+        $pdo = null;   
+    } 
   return $response->withHeader('Content-Type','application/json');
 });
 
 
 $app->get('/getall', function (Request $request, Response $response, $args) use ($pdo) {
 
-    $headers = getallheaders();
-    if(!array_key_exists('Authorization', $headers)){  
-        $response->getBody()->write( json_encode(['Codigo' => 666, 'msg' => "REQUIERE TOKEN DE AUTORIZACION"  ])); 
-        return $response->withHeader('Content-Type','application/json');
-        exit;
-    }else{
-        $headerAut = $headers['Authorization'];
-    }
-
     try {
-        $secret_Key  = '68V0zWFrS72GbpPreidkQFLfj4v9m3Ti+DXc8OB0gcM=';
-        list($type, $jwt) = explode(' ', $headerAut, 2);
-            if (strcasecmp($type, 'Bearer') == 0) {
-            $decoded = JWT::decode($jwt, new Key($secret_Key, 'HS512'));
-            $decoded_array = (array) $decoded;
-
-            }
+        $headers = getallheaders();
+        $decoded_array =  validaToken($headers);
+        if(empty($decoded_array)){
+            $response->getBody()->write( json_encode(['error' => 'Unauthorized'])); 
+            return $response->withStatus(401)->withHeader('Content-Type','application/json');
+            exit;
+        }
 //aqui inicia la generacion automatica de codigo
     
 $consulta = $pdo->query("SELECT `user`,`password`,`name`,`lastname`,`secondlastname`,`email`,`status`,`modifydate`,`usrupd`  FROM usersystem ");
@@ -386,7 +353,9 @@ $response->getBody()->write(json_encode($dbdata));
 //aqui termina la generacion automatica de codigo
 } catch (Exception $e) {
     $response->getBody()->write( json_encode(['Codigo' => 2, 'msg' => $e->getMessage() , 'body' => '']) );
-} 
+} finally {
+    $pdo = null;   
+}  
 
 return $response->withHeader('Content-Type','application/json');
 
@@ -395,29 +364,19 @@ return $response->withHeader('Content-Type','application/json');
 
  
 $app->get('/geuserbyid/{id}', function (Request $request, Response $response, $args) use ($pdo) {
-
+    try {
     $headers = getallheaders();
-    if(!array_key_exists('Authorization', $headers)){  
-        $response->getBody()->write( json_encode(['Codigo' => 666, 'msg' => "REQUIERE TOKEN DE AUTORIZACION"  ])); 
-        return $response->withHeader('Content-Type','application/json');
+    $decoded_array =  validaToken($headers);
+    if(empty($decoded_array)){
+        $response->getBody()->write( json_encode(['error' => 'Unauthorized'])); 
+        return $response->withStatus(401)->withHeader('Content-Type','application/json');
         exit;
-    }else{
-        $headerAut = $headers['Authorization'];
     }
 
+    //aqui inicia la generacion automatica de codigo
     //aqui va el PK de la tabla
     $id = array_key_exists('id', $args) ? $args['id'] : '';
     //aqui va el PK de la tabla
-
-    try {
-        $secret_Key  = '68V0zWFrS72GbpPreidkQFLfj4v9m3Ti+DXc8OB0gcM=';
-        list($type, $jwt) = explode(' ', $headerAut, 2);
-            if (strcasecmp($type, 'Bearer') == 0) {
-            $decoded = JWT::decode($jwt, new Key($secret_Key, 'HS512'));
-            $decoded_array = (array) $decoded;
-
-            }
-//aqui inicia la generacion automatica de codigo
     
 $consulta = $pdo->query("SELECT `user`,`password`,`name`,`lastname`,`secondlastname`,`email`,`status`,`modifydate`,`usrupd`  FROM usersystem where `id` = $id");
 
@@ -427,12 +386,33 @@ $response->getBody()->write(json_encode($dbdata));
 //aqui termina la generacion automatica de codigo
 } catch (Exception $e) {
     $response->getBody()->write( json_encode(['Codigo' => 2, 'msg' => $e->getMessage() , 'body' => '']) );
+} finally {
+    $pdo = null;   
 } 
 
 return $response->withHeader('Content-Type','application/json');
 
 });
 
+
+function validaToken( $headers ){
+    $apisys ="ADM";
+    $decoded_array=[];
+    if(array_key_exists('Authorization', $headers)){  
+        $headerAut = $headers['Authorization'];
+        $secret_Key  = '68V0zWFrS72GbpPreidkQFLfj4v9m3Ti+DXc8OB0gcM=';
+        list($type, $jwt) = explode(' ', $headerAut, 2);
+            if (strcasecmp($type, 'Bearer') == 0) {
+            $decoded = JWT::decode($jwt, new Key($secret_Key, 'HS512'));
+            $decoded_array = (array) $decoded;
+            $systoken = $decoded_array['sysname'];
+            if($systoken!=$apisys){ 
+                $decoded_array = [];
+              } 
+            }     
+    } 
+    return $decoded_array;
+}
 
 
 // end define app routes
