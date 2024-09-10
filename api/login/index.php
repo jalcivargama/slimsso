@@ -395,6 +395,59 @@ return $response->withHeader('Content-Type','application/json');
 });
 
 
+$app->get('/getuserbycriteria', function (Request $request, Response $response, $args) use ($pdo) {
+    try {
+    $headers = getallheaders();
+    $decoded_array =  validaToken($headers);
+    $body = $request->getBody();
+    $data = json_decode($body, true);
+    if(empty($decoded_array)){
+        $response->getBody()->write( json_encode(['error' => 'Unauthorized'])); 
+        return $response->withStatus(401)->withHeader('Content-Type','application/json');
+        exit;
+    }
+
+    //aqui inicia la generacion automatica de codigo
+    $result = array();
+    $criteria = array_key_exists('criteria', $data) ? $data['criteria'] : '';
+
+    $page = array_key_exists('page', $data)&& $data['page']!= "" ? $data['page'] : '1';
+    $rows=array_key_exists('rows', $data)&& $data['rows']!= "" ? $data['rows'] : '10';
+    $sort =array_key_exists('sort', $data) && $data['sort']!= "" ? $data['sort'] : 'id';
+    $order =array_key_exists('order', $data)&& $data['order']!= "" ? $data['order'] : 'DESC';
+    $offset = ((int)$page-1)*(int)$rows;
+    $where = " WHERE 1=1 and  `user` like '%$criteria%' OR  `name` like '%$criteria%'" ;
+
+   $consulta = $pdo->query(" select count(*) as total   FROM usersystem $where");
+    $dbdata = $consulta->fetchAll(PDO::FETCH_ASSOC);
+    foreach($dbdata as $fila ):
+        $result["total"] =$fila["total"];
+    endforeach;
+   
+    $consulta = $pdo->query("SELECT `id`, `user`,`password`,`name`,`lastname`,`secondlastname`,`email`,`status`,`modifydate`,`usrupd`  FROM usersystem  $where  ORDER BY $sort $order  limit  $offset , $rows ");
+
+
+
+
+$dbdata = $consulta->fetchAll(PDO::FETCH_ASSOC);
+$result['body'] = $dbdata ;
+
+$response->getBody()->write(json_encode($result));
+
+//aqui termina la generacion automatica de codigo
+} catch (Exception $e) {
+    $response->getBody()->write( json_encode(['Codigo' => 2, 'msg' => $e->getMessage() , 'body' => '']) );
+} finally {
+    $pdo = null;   
+} 
+
+return $response->withHeader('Content-Type','application/json');
+
+});
+
+
+
+
 function validaToken( $headers ){
     $apisys ="ADM";
     $decoded_array=[];
@@ -413,6 +466,7 @@ function validaToken( $headers ){
     } 
     return $decoded_array;
 }
+
 
 
 // end define app routes
