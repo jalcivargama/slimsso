@@ -4,7 +4,7 @@ $dbname ='slimsso';
 $username ='root';
 $password = '';
 
-$conexion = "mysql:host=$host;dbname=$dbname";
+$conexion = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
 try {
     $pdo = new PDO($conexion,$username,$password);
 } catch (PDOException $e) {
