@@ -199,7 +199,7 @@ $app->put('/adduser', function (Request $request, Response $response, $args) use
 
 
 //aqui termina la generacion automatica de codigo
-            $response->getBody()->write( json_encode($responseDto)  );
+            $response->getBody()->write( json_encode($responseDto, JSON_THROW_ON_ERROR)  );
     } catch (Exception $e) {
         $response->getBody()->write( json_encode(['Codigo' => 2, 'msg' => $e->getMessage() , 'body' => '']) );
     } finally {
@@ -238,7 +238,7 @@ $app->patch('/updateuser/{id}', function (Request $request, Response $response, 
 
     if($id==""||$user==""||$password=""||$name==""||$lastname==""||$secondlastname==""||$email==""||$status==""){
         $responseDto = ['Codigo' => 3, 'msg' => 'TODOS LOS DATOS SON OBLIGATORIOS', 'body' => $body ];
-        $response->getBody()->write( json_encode($responseDto)  );
+        $response->getBody()->write( json_encode($responseDto, JSON_THROW_ON_ERROR)  );
         return $response->withHeader('Content-Type','application/json');
         exit;
     }
@@ -283,7 +283,7 @@ $app->patch('/updateuser/{id}', function (Request $request, Response $response, 
 
 
 //aqui termina la generacion automatica de codigo
-            $response->getBody()->write( json_encode($responseDto)  );
+            $response->getBody()->write( json_encode($responseDto, JSON_THROW_ON_ERROR)  );
     } catch (Exception $e) {
         $response->getBody()->write( json_encode(['Codigo' => 2, 'msg' => $e->getMessage() , 'body' => '']) );
     }  finally {
@@ -324,7 +324,7 @@ $app->delete('/deleteuser/{id}', function (Request $request, Response $response,
             $responseDto = ['Codigo' => 2, 'msg' => 'OCURRIO UN ERROR', 'body' => ''];
         }
 //aqui termina la generacion automatica de codigo
-            $response->getBody()->write( json_encode($responseDto)  );
+            $response->getBody()->write( json_encode($responseDto, JSON_THROW_ON_ERROR)  );
     } catch (Exception $e) {
         $response->getBody()->write( json_encode(['Codigo' => 2, 'msg' => $e->getMessage() , 'body' => '']) );
     } finally {
@@ -348,7 +348,7 @@ $app->get('/getall', function (Request $request, Response $response, $args) use 
     
 $consulta = $pdo->query("SELECT `user`,`password`,`name`,`lastname`,`secondlastname`,`email`,`status`,`modifydate`,`usrupd`  FROM usersystem ");
 $dbdata = $consulta->fetchAll(PDO::FETCH_ASSOC);
-$response->getBody()->write(json_encode($dbdata));
+$response->getBody()->write(json_encode($dbdata, JSON_THROW_ON_ERROR));
 
 //aqui termina la generacion automatica de codigo
 } catch (Exception $e) {
@@ -381,7 +381,7 @@ $app->get('/geuserbyid/{id}', function (Request $request, Response $response, $a
 $consulta = $pdo->query("SELECT `user`,`password`,`name`,`lastname`,`secondlastname`,`email`,`status`,`modifydate`,`usrupd`  FROM usersystem where `id` = $id");
 
 $dbdata = $consulta->fetchAll(PDO::FETCH_ASSOC);
-$response->getBody()->write(json_encode($dbdata));
+$response->getBody()->write(json_encode($dbdata, JSON_THROW_ON_ERROR));
 
 //aqui termina la generacion automatica de codigo
 } catch (Exception $e) {
@@ -432,7 +432,7 @@ $app->get('/getuserbycriteria', function (Request $request, Response $response, 
 $dbdata = $consulta->fetchAll(PDO::FETCH_ASSOC);
 $result['body'] = $dbdata ;
 
-$response->getBody()->write(json_encode($result));
+$response->getBody()->write(json_encode($result, JSON_THROW_ON_ERROR));
 
 //aqui termina la generacion automatica de codigo
 } catch (Exception $e) {
